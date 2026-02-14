@@ -80,12 +80,49 @@ enum ToolCallStatus: Equatable {
   }
 }
 
+// MARK: - Guardian Alert Types
+
+enum GuardianAlertType: Equatable {
+  case none
+  case priceAlert        // Vendor overcharging, street scam
+  case negotiationCoach  // Active bargaining guidance (rental, purchase)
+  case fareCheck         // Auto/taxi/ride fare verification
+  case fairPrice         // Brief confirmation that price is fair
+
+  var headerText: String {
+    switch self {
+    case .none: return ""
+    case .priceAlert: return "PRICE ALERT"
+    case .negotiationCoach: return "NEGOTIATION"
+    case .fareCheck: return "FARE CHECK"
+    case .fairPrice: return "FAIR PRICE"
+    }
+  }
+
+  var headerIcon: String {
+    switch self {
+    case .none: return ""
+    case .priceAlert: return "exclamationmark.triangle.fill"
+    case .negotiationCoach: return "bubble.left.and.bubble.right.fill"
+    case .fareCheck: return "car.fill"
+    case .fairPrice: return "checkmark.shield.fill"
+    }
+  }
+
+  var isUrgent: Bool {
+    switch self {
+    case .priceAlert, .fareCheck: return true
+    default: return false
+    }
+  }
+}
+
 // MARK: - Tool Declarations (for Gemini setup message)
 
 enum ToolDeclarations {
 
   static func allDeclarations() -> [[String: Any]] {
-    return [execute]
+    return [execute, getLocation]
   }
 
   static let execute: [String: Any] = [
@@ -102,5 +139,15 @@ enum ToolDeclarations {
       "required": ["task"]
     ] as [String: Any],
     "behavior": "BLOCKING"
+  ]
+
+  static let getLocation: [String: Any] = [
+    "name": "get_location",
+    "description": "Get the user's current GPS location including city, area, and country. Use this to determine where the user is for price checking, local information, etc.",
+    "parameters": [
+      "type": "object",
+      "properties": [:] as [String: Any],
+      "required": [] as [String]
+    ] as [String: Any]
   ]
 }
