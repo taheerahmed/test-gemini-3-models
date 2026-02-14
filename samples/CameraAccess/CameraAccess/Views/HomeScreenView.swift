@@ -51,17 +51,23 @@ struct HomeScreenView: View {
 
         Spacer()
 
-        VStack(spacing: 20) {
-          Text("You'll be redirected to the Meta AI app to confirm your connection.")
+        VStack(spacing: 12) {
+          CustomButton(
+            title: "Start on iPhone",
+            style: .primary,
+            isDisabled: false
+          ) {
+            viewModel.skipToiPhoneMode = true
+          }
+
+          Text("or connect your Meta glasses")
             .font(.system(size: 14))
             .foregroundColor(.gray)
             .multilineTextAlignment(.center)
-            .fixedSize(horizontal: false, vertical: true)
-            .padding(.horizontal, 12)
 
           CustomButton(
             title: viewModel.registrationState == .registering ? "Connecting..." : "Connect my glasses",
-            style: .primary,
+            style: .secondary,
             isDisabled: viewModel.registrationState == .registering
           ) {
             viewModel.connectGlasses()
