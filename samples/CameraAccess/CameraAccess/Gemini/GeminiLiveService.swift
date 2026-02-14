@@ -191,7 +191,7 @@ class GeminiLiveService: ObservableObject {
             "silenceDurationMs": 500,
             "prefixPaddingMs": 40
           ],
-          "activityHandling": "START_OF_ACTIVITY_INTERRUPTS",
+          "activityHandling": "NO_INTERRUPTION",
           "turnCoverage": "TURN_INCLUDES_ALL_INPUT"
         ],
         "inputAudioTranscription": [:] as [String: Any],
