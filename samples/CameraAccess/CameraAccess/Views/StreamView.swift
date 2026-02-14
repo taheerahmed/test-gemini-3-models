@@ -9,9 +9,7 @@
 //
 // StreamView.swift
 //
-// Main UI for video streaming from Meta wearable devices using the DAT SDK.
-// This view demonstrates the complete streaming API: video streaming with real-time display, photo capture,
-// and error handling. Extended with Gemini Live AI assistant integration.
+// Main UI for video streaming — extended with JARVIS-style guardian overlay.
 //
 
 import MWDATCore
@@ -24,7 +22,7 @@ struct StreamView: View {
 
   var body: some View {
     ZStack {
-      // Black background for letterboxing/pillarboxing
+      // Black background
       Color.black
         .edgesIgnoringSafeArea(.all)
 
@@ -41,49 +39,69 @@ struct StreamView: View {
       } else {
         ProgressView()
           .scaleEffect(1.5)
-          .foregroundColor(.white)
+          .tint(Color(red: 0.4, green: 0.8, blue: 1.0))
       }
 
-      // Gemini status overlay (top) + speaking indicator
+      // JARVIS overlay
       if geminiVM.isGeminiActive {
-        VStack {
+        VStack(spacing: 0) {
+          // Top bar — status indicators
           GeminiStatusBar(geminiVM: geminiVM)
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+
           Spacer()
 
-          VStack(spacing: 8) {
+          // Bottom content area — transcripts, tool status, speaking indicator
+          VStack(spacing: 10) {
+            // Transcript area
             if !geminiVM.userTranscript.isEmpty || !geminiVM.aiTranscript.isEmpty {
               TranscriptView(
                 userText: geminiVM.userTranscript,
-                aiText: geminiVM.aiTranscript
+                aiText: geminiVM.aiTranscript,
+                alertType: geminiVM.alertType
               )
+              .transition(.asymmetric(
+                insertion: .move(edge: .bottom).combined(with: .opacity),
+                removal: .opacity
+              ))
             }
 
+            // Tool call status
             ToolCallStatusView(status: geminiVM.toolCallStatus)
 
+            // Speaking indicator
             if geminiVM.isModelSpeaking {
-              HStack(spacing: 8) {
-                Image(systemName: "speaker.wave.2.fill")
-                  .foregroundColor(.white)
-                  .font(.system(size: 14))
+              HStack(spacing: 10) {
                 SpeakingIndicator()
+                Text("Speaking")
+                  .font(.system(size: 11, weight: .medium, design: .monospaced))
+                  .foregroundColor(Color(red: 0.4, green: 0.8, blue: 1.0).opacity(0.8))
+                  .tracking(1)
               }
               .padding(.horizontal, 16)
               .padding(.vertical, 8)
-              .background(Color.black.opacity(0.5))
-              .cornerRadius(20)
+              .background(.ultraThinMaterial)
+              .clipShape(Capsule())
+              .transition(.opacity)
             }
           }
-          .padding(.bottom, 80)
+          .padding(.horizontal, 20)
+          .padding(.bottom, 90)
+          .animation(.easeInOut(duration: 0.3), value: geminiVM.userTranscript)
+          .animation(.easeInOut(duration: 0.3), value: geminiVM.aiTranscript)
+          .animation(.easeInOut(duration: 0.3), value: geminiVM.isModelSpeaking)
+          .animation(.easeInOut(duration: 0.3), value: geminiVM.alertType)
         }
-        .padding(.all, 24)
       }
 
-      // Bottom controls layer
+      // Bottom controls
       VStack {
         Spacer()
         ControlsView(viewModel: viewModel, geminiVM: geminiVM)
+          .padding(.horizontal, 20)
+          .padding(.bottom, 16)
       }
-      .padding(.all, 24)
     }
     .onDisappear {
       Task {
@@ -95,7 +113,6 @@ struct StreamView: View {
         }
       }
     }
-    // Show captured photos from DAT SDK in a preview sheet
     .sheet(isPresented: $viewModel.showPhotoPreview) {
       if let photo = viewModel.capturedPhoto {
         PhotoPreviewView(
@@ -106,8 +123,7 @@ struct StreamView: View {
         )
       }
     }
-    // Gemini error alert
-    .alert("AI Assistant", isPresented: Binding(
+    .alert("Guardian", isPresented: Binding(
       get: { geminiVM.errorMessage != nil },
       set: { if !$0 { geminiVM.errorMessage = nil } }
     )) {
@@ -118,42 +134,100 @@ struct StreamView: View {
   }
 }
 
-// Extracted controls for clarity
+// MARK: - Controls
+
 struct ControlsView: View {
   @ObservedObject var viewModel: StreamSessionViewModel
   @ObservedObject var geminiVM: GeminiSessionViewModel
 
   var body: some View {
-    // Controls row
-    HStack(spacing: 8) {
-      CustomButton(
-        title: "Stop streaming",
-        style: .destructive,
-        isDisabled: false
-      ) {
-        Task {
-          await viewModel.stopSession()
-        }
+    HStack(spacing: 12) {
+      // Stop button
+      Button {
+        Task { await viewModel.stopSession() }
+      } label: {
+        Image(systemName: "xmark")
+          .font(.system(size: 14, weight: .bold))
+          .foregroundColor(.white)
+          .frame(width: 48, height: 48)
+          .background(Color.red.opacity(0.8))
+          .clipShape(Circle())
       }
 
-      // Photo button (glasses mode only — DAT SDK capture)
+      Spacer()
+
+      // Photo button (glasses mode only)
       if viewModel.streamingMode == .glasses {
-        CircleButton(icon: "camera.fill", text: nil) {
+        Button {
           viewModel.capturePhoto()
+        } label: {
+          Image(systemName: "camera.fill")
+            .font(.system(size: 14))
+            .foregroundColor(.white)
+            .frame(width: 48, height: 48)
+            .background(.ultraThinMaterial)
+            .clipShape(Circle())
+            .overlay(
+              Circle().stroke(Color.white.opacity(0.2), lineWidth: 0.5)
+            )
         }
       }
 
-      // Gemini AI button
-      CircleButton(
-        icon: geminiVM.isGeminiActive ? "waveform.circle.fill" : "waveform.circle",
-        text: "AI"
-      ) {
+      // JARVIS toggle button
+      Button {
         Task {
           if geminiVM.isGeminiActive {
             geminiVM.stopSession()
           } else {
             await geminiVM.startSession()
           }
+        }
+      } label: {
+        ZStack {
+          // Outer ring glow when active
+          if geminiVM.isGeminiActive {
+            Circle()
+              .stroke(
+                LinearGradient(
+                  colors: [
+                    Color(red: 0.4, green: 0.8, blue: 1.0),
+                    Color(red: 0.2, green: 0.5, blue: 1.0)
+                  ],
+                  startPoint: .topLeading,
+                  endPoint: .bottomTrailing
+                ),
+                lineWidth: 2
+              )
+              .frame(width: 58, height: 58)
+
+            // Subtle pulse
+            ListeningPulse()
+              .scaleEffect(6)
+              .opacity(0.15)
+          }
+
+          VStack(spacing: 2) {
+            Image(systemName: geminiVM.isGeminiActive ? "shield.checkered" : "shield")
+              .font(.system(size: 16, weight: .semibold))
+            if !geminiVM.isGeminiActive {
+              Text("GUARD")
+                .font(.system(size: 7, weight: .bold, design: .monospaced))
+                .tracking(1)
+            }
+          }
+          .foregroundColor(
+            geminiVM.isGeminiActive
+              ? Color(red: 0.4, green: 0.8, blue: 1.0)
+              : .white.opacity(0.7)
+          )
+          .frame(width: 52, height: 52)
+          .background(
+            geminiVM.isGeminiActive
+              ? Color(red: 0.1, green: 0.2, blue: 0.3).opacity(0.9)
+              : Color.clear
+          )
+          .background(.ultraThinMaterial)
+          .clipShape(Circle())
         }
       }
     }

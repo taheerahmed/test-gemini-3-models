@@ -20,6 +20,8 @@ struct NonStreamView: View {
   @ObservedObject var viewModel: StreamSessionViewModel
   @ObservedObject var wearablesVM: WearablesViewModel
   @State private var sheetHeight: CGFloat = 300
+  @State private var showLanguagePicker = false
+  @State private var selectedLanguage = GeminiConfig.userLanguageCode
 
   var body: some View {
     ZStack {
@@ -27,7 +29,29 @@ struct NonStreamView: View {
 
       VStack {
         HStack {
+          // Language selector button
+          Button {
+            showLanguagePicker = true
+          } label: {
+            HStack(spacing: 6) {
+              Image(systemName: "globe")
+                .font(.system(size: 14))
+              Text(GeminiConfig.userLanguageName)
+                .font(.system(size: 13, weight: .medium))
+            }
+            .foregroundColor(Color(red: 0.4, green: 0.8, blue: 1.0))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial)
+            .clipShape(Capsule())
+            .overlay(
+              Capsule()
+                .stroke(Color(red: 0.4, green: 0.8, blue: 1.0).opacity(0.3), lineWidth: 1)
+            )
+          }
+
           Spacer()
+
           Menu {
             Button("Disconnect", role: .destructive) {
               wearablesVM.disconnectGlasses()
@@ -52,14 +76,15 @@ struct NonStreamView: View {
             .aspectRatio(contentMode: .fit)
             .frame(width: 120)
 
-          Text("Stream Your Glasses Camera")
-            .font(.system(size: 20, weight: .semibold))
+          Text("Guardian Mode")
+            .font(.system(size: 22, weight: .bold, design: .monospaced))
             .foregroundColor(.white)
+            .tracking(1)
 
-          Text("Tap the Start streaming button to stream video from your glasses or use the camera button to take a photo from your glasses.")
-            .font(.system(size: 15))
+          Text("Your AI guardian watches through your camera and listens to conversations around you. It stays silent until you need it — detecting scams, checking prices, and coaching negotiations.")
+            .font(.system(size: 14))
             .multilineTextAlignment(.center)
-            .foregroundColor(.white)
+            .foregroundColor(.white.opacity(0.7))
         }
         .padding(.horizontal, 12)
 
@@ -100,6 +125,12 @@ struct NonStreamView: View {
         }
       }
       .padding(.all, 24)
+    }
+    .sheet(isPresented: $showLanguagePicker) {
+      LanguagePickerView(selectedLanguage: $selectedLanguage) {
+        GeminiConfig.userLanguageCode = selectedLanguage
+        showLanguagePicker = false
+      }
     }
     .sheet(isPresented: $wearablesVM.showGettingStartedSheet) {
       if #available(iOS 16.0, *) {
@@ -180,5 +211,56 @@ struct TipItemView: View {
         .fixedSize(horizontal: false, vertical: true)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+  }
+}
+
+// MARK: - Language Picker
+
+struct LanguagePickerView: View {
+  @Binding var selectedLanguage: String
+  let onDone: () -> Void
+
+  var body: some View {
+    NavigationView {
+      List {
+        ForEach(GeminiConfig.supportedLanguages, id: \.code) { lang in
+          Button {
+            selectedLanguage = lang.code
+          } label: {
+            HStack {
+              Text(lang.flag)
+                .font(.system(size: 20))
+              VStack(alignment: .leading, spacing: 2) {
+                Text(lang.name)
+                  .font(.system(size: 16, weight: .medium))
+                  .foregroundColor(.primary)
+                if lang.code == "auto" {
+                  Text("JARVIS detects your language automatically")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+                }
+              }
+              Spacer()
+              if selectedLanguage == lang.code {
+                Image(systemName: "checkmark")
+                  .font(.system(size: 14, weight: .bold))
+                  .foregroundColor(Color(red: 0.4, green: 0.8, blue: 1.0))
+              }
+            }
+            .padding(.vertical, 4)
+          }
+        }
+      }
+      .navigationTitle("Response Language")
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .confirmationAction) {
+          Button("Done") {
+            onDone()
+          }
+          .fontWeight(.semibold)
+        }
+      }
+    }
   }
 }
