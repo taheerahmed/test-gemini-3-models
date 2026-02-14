@@ -1,8 +1,61 @@
-# VisionClaw
+# VisionClaw: Guardian AI
 
 A real-time AI guardian for Meta Ray-Ban smart glasses. Sees what you see, hears what you hear, and takes action on your behalf — all through voice.
 
-Built on [Meta Wearables DAT SDK](https://github.com/facebook/meta-wearables-dat-ios) + [Gemini Live API](https://ai.google.dev/gemini-api/docs/live) + [OpenClaw](https://github.com/nichochar/openclaw).
+---
+
+## Built On
+
+This project is a **derivative work** built on top of [**VisionClaw**](https://github.com/sseanliu/VisionClaw) by [Sean Liu](https://github.com/sseanliu), which itself extends Meta's [CameraAccess sample](https://github.com/facebook/meta-wearables-dat-ios) from the Wearables DAT SDK.
+
+### What VisionClaw provides (the foundation we build on)
+
+Sean Liu's VisionClaw established the core real-time AI pipeline for Meta Ray-Ban glasses:
+
+- **Gemini Live API integration** — bidirectional WebSocket streaming of audio + video to Google's multimodal model
+- **Audio pipeline** — mic capture at PCM 16kHz, AI playback at PCM 24kHz, with proper echo cancellation
+- **Video pipeline** — camera frames throttled to ~1fps, JPEG-compressed, and streamed to Gemini
+- **OpenClaw bridge** — HTTP client that gives Gemini access to 56+ real-world tools (messaging, web search, smart home, etc.) via the [OpenClaw](https://github.com/nichochar/openclaw) gateway
+- **Streaming transcript UI** — real-time display of user speech and AI responses
+- **Session management** — conversation history, session keys, and graceful reconnection
+
+### What we added (Guardian AI layer)
+
+We took VisionClaw's vision + audio + agentic foundation and built an **intelligent guardian** on top of it:
+
+| Feature | What it does |
+|---------|-------------|
+| **JARVIS Guardian Mode** | Complete system instruction that transforms Gemini from a general assistant into a silent, proactive guardian that only speaks when it has something genuinely useful to say |
+| **Multi-party conversation awareness** | Distinguishes the user from vendors, drivers, landlords, and bystanders using context clues + camera feed — never confuses who said what |
+| **Hyper-local intelligence** | GPS + reverse geocoding to neighborhood/POI level ("Near Innovative Multiplex, Marathahalli, Bengaluru") — all price research uses exact location |
+| **Proactive research** | The moment a price is mentioned or a price board is seen, tools fire immediately — the answer is ready before the user needs it |
+| **Live negotiation coaching** | Phase-aware bargaining guidance (opening → counter → closing) with BATNA awareness |
+| **Non-blocking tool calls** | Gemini keeps listening to the conversation while tools execute in the background — no dead silence during research |
+| **Transcript context injection** | Buffers what was said during async tool calls and injects it into the result, so Gemini never loses conversational context |
+| **Alert classification UI** | Glass-morphism overlay with scenario-specific alerts (price alert, negotiation coach, fare check, fair price) — urgent vs. informational visual treatment |
+| **iPhone camera mode** | Full pipeline testing without glasses using the iPhone's back camera |
+| **Interruption hardening** | Background speech from vendors/bystanders no longer cuts off AI alerts mid-sentence |
+| **Latency optimization** | Tuned video frame interval, JPEG quality, audio chunk size, and network settings for faster end-to-end response |
+
+### The stack
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Guardian AI Layer (this project)                            │
+│  JARVIS personality, multi-party awareness, hyper-local      │
+│  intelligence, negotiation coaching, alert classification    │
+├─────────────────────────────────────────────────────────────┤
+│  VisionClaw by Sean Liu                                      │
+│  Gemini Live WebSocket, audio/video pipelines, OpenClaw      │
+│  bridge, transcript UI, session management                   │
+├─────────────────────────────────────────────────────────────┤
+│  Meta Wearables DAT SDK (CameraAccess sample)                │
+│  Ray-Ban glasses camera streaming, device pairing            │
+├─────────────────────────────────────────────────────────────┤
+│  Gemini Live API          │  OpenClaw Gateway                │
+│  Real-time multimodal AI  │  56+ tools, messaging, search    │
+└───────────────────────────┴─────────────────────────────────┘
+```
 
 ---
 
