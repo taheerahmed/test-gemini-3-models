@@ -169,6 +169,13 @@ class GeminiLiveService: ObservableObject {
         "model": GeminiConfig.model,
         "generationConfig": [
           "responseModalities": ["AUDIO"],
+          "speechConfig": [
+            "voiceConfig": [
+              "prebuiltVoiceConfig": [
+                "voiceName": "Fenrir"
+              ]
+            ]
+          ],
           "thinkingConfig": [
             "thinkingBudget": 0
           ]

@@ -1,4 +1,4 @@
-# VisionClaw: Guardian AI
+# Sentinel
 
 A real-time, multilingual AI guardian for Meta Ray-Ban smart glasses. Sees what you see, hears what you hear, and takes action on your behalf — all through voice, in any language.
 
@@ -29,7 +29,7 @@ Sean Liu's VisionClaw established the core real-time AI pipeline for Meta Ray-Ba
 
 ### What we added (Guardian AI layer)
 
-We took VisionClaw's vision + audio + agentic foundation and built an **intelligent guardian** on top of it:
+We took VisionClaw's vision + audio + agentic foundation and built **Sentinel** — an intelligent guardian — on top of it:
 
 | Feature | What it does |
 |---------|-------------|
@@ -49,7 +49,7 @@ We took VisionClaw's vision + audio + agentic foundation and built an **intellig
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Guardian AI Layer (this project)                            │
+│  Sentinel (this project)                                     │
 │  JARVIS personality, multi-party awareness, hyper-local      │
 │  intelligence, negotiation coaching, alert classification    │
 ├─────────────────────────────────────────────────────────────┤
@@ -94,7 +94,7 @@ The glasses camera streams at ~1fps to Gemini for visual context while audio flo
                │                          │
                ▼                          ▼
 ┌──────────────────────────────────────────────────────────────────────┐
-│                      iOS App (VisionClaw)                            │
+│                      iOS App (Sentinel)                              │
 │                                                                      │
 │  ┌─────────────────┐  ┌──────────────────┐  ┌────────────────────┐  │
 │  │ StreamSession    │  │ AudioManager     │  │ LocationManager    │  │
@@ -171,11 +171,11 @@ The glasses camera streams at ~1fps to Gemini for visual context while audio flo
 
 ## What We Built on Top of Gemini
 
-Standard Gemini Live provides real-time audio + vision over WebSocket. VisionClaw adds several layers that transform it into an agentic guardian:
+Standard Gemini Live provides real-time audio + vision over WebSocket. Sentinel adds several layers that transform it into an agentic guardian:
 
 ### Multi-Party Conversation Awareness
 
-Base Gemini hears audio as a single stream. VisionClaw's system prompt + camera feed enable speaker attribution:
+Base Gemini hears audio as a single stream. Sentinel's system prompt + camera feed enable speaker attribution:
 
 - Distinguishes the **user** from **vendors**, **drivers**, **landlords**, and **bystanders**
 - Uses camera context to identify who's behind the counter vs. who's holding the phone
@@ -184,7 +184,7 @@ Base Gemini hears audio as a single stream. VisionClaw's system prompt + camera 
 
 ### Proactive Research (Anticipate, Don't React)
 
-VisionClaw doesn't wait for the user to ask. The moment it hears a price inquiry or sees a price board through the camera, it **immediately** calls tools to start researching local market rates — so the answer is ready before the user needs it.
+Sentinel doesn't wait for the user to ask. The moment it hears a price inquiry or sees a price board through the camera, it **immediately** calls tools to start researching local market rates — so the answer is ready before the user needs it.
 
 ### Hyper-Local Intelligence
 
@@ -192,7 +192,7 @@ GPS + reverse geocoding produces neighborhood-level context: not "Bengaluru" but
 
 ### Agentic Execution via OpenClaw
 
-Gemini alone can only respond with text/audio. Through OpenClaw, VisionClaw can **take real actions**: search the web, send messages on WhatsApp/Telegram, manage shopping lists, control smart home devices — 56+ skills.
+Gemini alone can only respond with text/audio. Through OpenClaw, Sentinel can **take real actions**: search the web, send messages on WhatsApp/Telegram, manage shopping lists, control smart home devices — 56+ skills.
 
 ### Live Negotiation Coaching
 
