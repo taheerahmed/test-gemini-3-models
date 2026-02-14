@@ -52,6 +52,7 @@
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>bluetooth-peripheral</string>
 		<string>external-accessory</string>
 	</array>
@@ -62,6 +63,8 @@
 		<string>com.meta.ar.wearable</string>
 	</array>
 	<!-- End required section for Device Access Toolkit Apps -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>VisionClaw needs your location to check local prices and detect potential scams in your area.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app uses the camera for iPhone testing mode, allowing you to test the AI assistant pipeline without glasses.</string>
 	<key>NSMicrophoneUsageDescription</key>
