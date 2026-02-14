@@ -41,8 +41,8 @@ struct StreamSessionView: View {
       viewModel.geminiSessionVM = geminiVM
       geminiVM.streamingMode = viewModel.streamingMode
     }
-    .onChange(of: viewModel.streamingMode) { newMode in
-      geminiVM.streamingMode = newMode
+    .onChange(of: viewModel.streamingMode) {
+      geminiVM.streamingMode = viewModel.streamingMode
     }
     .onChange(of: viewModel.isStreaming) {
       if viewModel.isStreaming && !geminiVM.isGeminiActive {
