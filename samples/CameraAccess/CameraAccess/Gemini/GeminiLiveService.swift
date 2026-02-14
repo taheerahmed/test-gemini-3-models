@@ -36,7 +36,7 @@ class GeminiLiveService: ObservableObject {
 
   init() {
     let config = URLSessionConfiguration.default
-    config.timeoutIntervalForRequest = 30
+    config.timeoutIntervalForRequest = 12
     self.urlSession = URLSession(configuration: config, delegate: delegate, delegateQueue: nil)
   }
 
@@ -188,7 +188,7 @@ class GeminiLiveService: ObservableObject {
             "disabled": false,
             "startOfSpeechSensitivity": "START_SENSITIVITY_HIGH",
             "endOfSpeechSensitivity": "END_SENSITIVITY_LOW",
-            "silenceDurationMs": 500,
+            "silenceDurationMs": 300,
             "prefixPaddingMs": 40
           ],
           "activityHandling": "NO_INTERRUPTION",

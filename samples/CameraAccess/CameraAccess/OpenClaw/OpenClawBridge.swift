@@ -16,7 +16,7 @@ class OpenClawBridge: ObservableObject {
   private let pingSession: URLSession
   private var sessionKey: String
   private var conversationHistory: [[String: String]] = []
-  private let maxHistoryTurns = 10
+  private let maxHistoryTurns = 5
 
   init() {
     let config = URLSessionConfiguration.default

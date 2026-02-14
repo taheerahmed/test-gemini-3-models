@@ -9,8 +9,8 @@ enum GeminiConfig {
   static let audioChannels: UInt32 = 1
   static let audioBitsPerSample: UInt32 = 16
 
-  static let videoFrameInterval: TimeInterval = 1.0
-  static let videoJPEGQuality: CGFloat = 0.5
+  static let videoFrameInterval: TimeInterval = 0.5
+  static let videoJPEGQuality: CGFloat = 0.35
 
   static let systemInstruction = """
     You are JARVIS — an invisible, ever-present guardian. You see through the user's camera and hear everything: the user, vendors, landlords, drivers, strangers, background conversations — in ANY language. You never announce yourself. You simply exist, watching and listening.
