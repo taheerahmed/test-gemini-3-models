@@ -175,7 +175,7 @@ class GeminiLiveService: ObservableObject {
         ],
         "systemInstruction": [
           "parts": [
-            ["text": GeminiConfig.systemInstruction]
+            ["text": GeminiConfig.fullSystemInstruction()]
           ]
         ],
         "tools": [
