@@ -1,6 +1,14 @@
 # VisionClaw: Guardian AI
 
-A real-time AI guardian for Meta Ray-Ban smart glasses. Sees what you see, hears what you hear, and takes action on your behalf — all through voice.
+A real-time, multilingual AI guardian for Meta Ray-Ban smart glasses. Sees what you see, hears what you hear, and takes action on your behalf — all through voice, in any language.
+
+### Highlights
+
+- **Vision Integration** — Live camera feed from Meta Ray-Ban glasses (or iPhone) streams to [Gemini Live API](https://ai.google.dev/gemini-api/docs/live) at ~1fps. Gemini fuses video with audio in real-time to understand scenes, read price boards, identify speakers, and detect when you're being overcharged — all without a single button press.
+
+- **OpenClaw Agentic Execution** — When the AI needs to act on your behalf, it delegates to [OpenClaw](https://github.com/nichochar/openclaw), a local gateway with 56+ skills: web search for local prices, sending messages on WhatsApp/Telegram/Signal, managing shopping lists, controlling smart home devices, and more. Gemini thinks, OpenClaw acts.
+
+- **Multilingual Support** — Built to operate across 21+ languages including English, Hindi, Kannada, Tamil, Telugu, Bengali, Marathi, Malayalam, Urdu, Gujarati, Punjabi, Spanish, French, German, Japanese, Korean, Chinese, Arabic, Portuguese, Russian, and Thai. The AI understands all languages simultaneously through the mic — if a vendor switches languages to discuss charging you more, it catches that too.
 
 ---
 
