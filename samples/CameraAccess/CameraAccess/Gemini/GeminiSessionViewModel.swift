@@ -18,6 +18,8 @@ class GeminiSessionViewModel: ObservableObject {
   private let audioManager = AudioManager()
   private let locationManager = LocationManager()
   private var lastVideoFrameTime: Date = .distantPast
+  private var modelSpeechEndTime: Date = .distantPast
+  private let echoTailGuardMs: TimeInterval = 0.3  // 300ms guard after AI stops speaking
   private var stateObservation: Task<Void, Never>?
   private var toolCallTranscriptBuffer: String = ""
   private var isBufferingTranscript: Bool = false
@@ -38,9 +40,10 @@ class GeminiSessionViewModel: ObservableObject {
     audioManager.onAudioCaptured = { [weak self] data in
       guard let self else { return }
       Task { @MainActor in
-        // iPhone mode: mute mic while model speaks to prevent echo feedback
-        // (loudspeaker + co-located mic overwhelms iOS echo cancellation)
-        if self.streamingMode == .iPhone && self.geminiService.isModelSpeaking { return }
+        // Mute mic while model speaks + 300ms tail guard to prevent echo/feedback loop
+        // Without this, AI voice gets picked up by mic and re-sent as user input
+        if self.geminiService.isModelSpeaking { return }
+        if Date().timeIntervalSince(self.modelSpeechEndTime) < self.echoTailGuardMs { return }
         self.geminiService.sendAudio(data: data)
       }
     }
@@ -137,7 +140,12 @@ class GeminiSessionViewModel: ObservableObject {
         try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
         guard !Task.isCancelled else { break }
         self.connectionState = self.geminiService.connectionState
+        let wasSpeaking = self.isModelSpeaking
         self.isModelSpeaking = self.geminiService.isModelSpeaking
+        // Track when AI stops speaking for echo tail guard
+        if wasSpeaking && !self.isModelSpeaking {
+          self.modelSpeechEndTime = Date()
+        }
         self.toolCallStatus = self.openClawBridge.lastToolCallStatus
         self.openClawConnectionState = self.openClawBridge.connectionState
       }
