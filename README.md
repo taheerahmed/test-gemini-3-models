@@ -1,4 +1,9 @@
-# Sentinel
+# VisionClaw: Guardian AI
+
+> **This is a fork of [VisionClaw](https://github.com/sseanliu/VisionClaw) by [Sean Liu](https://github.com/sseanliu).**
+> We took the open-source VisionClaw project — which provides real-time Gemini Live vision + audio streaming for Meta Ray-Ban glasses — and built a full **Guardian AI** layer on top of it: multi-party conversation awareness, hyper-local price intelligence, live negotiation coaching, multilingual understanding, and agentic tool execution via OpenClaw.
+
+---
 
 A real-time, multilingual AI guardian for Meta Ray-Ban smart glasses. Sees what you see, hears what you hear, and takes action on your behalf — all through voice, in any language.
 
