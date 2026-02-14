@@ -36,7 +36,7 @@ class GeminiLiveService: ObservableObject {
 
   init() {
     let config = URLSessionConfiguration.default
-    config.timeoutIntervalForRequest = 30
+    config.timeoutIntervalForRequest = 12
     self.urlSession = URLSession(configuration: config, delegate: delegate, delegateQueue: nil)
   }
 
@@ -169,6 +169,13 @@ class GeminiLiveService: ObservableObject {
         "model": GeminiConfig.model,
         "generationConfig": [
           "responseModalities": ["AUDIO"],
+          "speechConfig": [
+            "voiceConfig": [
+              "prebuiltVoiceConfig": [
+                "voiceName": "Fenrir"
+              ]
+            ]
+          ],
           "thinkingConfig": [
             "thinkingBudget": 0
           ]
@@ -188,10 +195,10 @@ class GeminiLiveService: ObservableObject {
             "disabled": false,
             "startOfSpeechSensitivity": "START_SENSITIVITY_HIGH",
             "endOfSpeechSensitivity": "END_SENSITIVITY_LOW",
-            "silenceDurationMs": 500,
+            "silenceDurationMs": 300,
             "prefixPaddingMs": 40
           ],
-          "activityHandling": "START_OF_ACTIVITY_INTERRUPTS",
+          "activityHandling": "NO_INTERRUPTION",
           "turnCoverage": "TURN_INCLUDES_ALL_INPUT"
         ],
         "inputAudioTranscription": [:] as [String: Any],
