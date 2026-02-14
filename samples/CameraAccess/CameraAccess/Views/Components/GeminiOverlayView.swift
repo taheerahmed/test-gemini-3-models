@@ -97,7 +97,7 @@ struct GuardianPill: View {
 
   private var pillIcon: String {
     switch alertType {
-    case .none: return "shield.checkered"
+    case .none: return "ear.fill"
     case .fairPrice: return "checkmark.shield.fill"
     default: return alertType.headerIcon
     }
@@ -105,7 +105,7 @@ struct GuardianPill: View {
 
   private var pillText: String {
     switch alertType {
-    case .none: return "GUARDIAN"
+    case .none: return "LISTENING"
     case .fairPrice: return "FAIR"
     default: return alertType.headerText
     }
@@ -157,16 +157,22 @@ struct TranscriptView: View {
         }
       }
 
-      // User transcript
+      // Conversation transcript (all speakers — user + vendors/drivers/landlords)
       if !userText.isEmpty {
         HStack(alignment: .top, spacing: 8) {
-          Image(systemName: "person.fill")
+          Image(systemName: "waveform")
             .font(.system(size: 10))
-            .foregroundColor(.white.opacity(0.4))
+            .foregroundColor(Color(red: 0.4, green: 0.8, blue: 1.0).opacity(0.6))
             .frame(width: 16)
-          Text(userText)
-            .font(.system(size: 14))
-            .foregroundColor(.white.opacity(0.6))
+          VStack(alignment: .leading, spacing: 2) {
+            Text("OVERHEARD")
+              .font(.system(size: 8, weight: .bold, design: .monospaced))
+              .foregroundColor(Color(red: 0.4, green: 0.8, blue: 1.0).opacity(0.4))
+              .tracking(1.5)
+            Text(userText)
+              .font(.system(size: 14))
+              .foregroundColor(.white.opacity(0.6))
+          }
         }
       }
 
