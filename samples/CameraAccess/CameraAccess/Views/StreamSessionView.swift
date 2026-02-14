@@ -44,6 +44,13 @@ struct StreamSessionView: View {
     .onChange(of: viewModel.streamingMode) { newMode in
       geminiVM.streamingMode = newMode
     }
+    .onChange(of: viewModel.isStreaming) {
+      if viewModel.isStreaming && !geminiVM.isGeminiActive {
+        Task {
+          await geminiVM.startSession()
+        }
+      }
+    }
     .onAppear {
       UIApplication.shared.isIdleTimerDisabled = true
     }
