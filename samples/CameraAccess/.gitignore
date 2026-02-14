@@ -8,6 +8,19 @@ CameraAccess/FastVLM/models/
 # Local secrets (API keys, tokens)
 CameraAccess/Secrets.swift
 
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Apple signing artifacts
+*.p8
+*.p12
+*.mobileprovision
+*.cer
+*.keychain
+*.keychain-db
+
 # Xcode workspace metadata
 *.xcworkspace/
 
