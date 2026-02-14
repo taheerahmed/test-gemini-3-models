@@ -19,6 +19,8 @@ class GeminiSessionViewModel: ObservableObject {
   private let locationManager = LocationManager()
   private var lastVideoFrameTime: Date = .distantPast
   private var stateObservation: Task<Void, Never>?
+  private var toolCallTranscriptBuffer: String = ""
+  private var isBufferingTranscript: Bool = false
 
   var streamingMode: StreamingMode = .glasses
 
@@ -65,6 +67,10 @@ class GeminiSessionViewModel: ObservableObject {
         self.userTranscript += text
         self.aiTranscript = ""
         self.alertType = .none
+        // Buffer transcript during tool calls so context isn't lost
+        if self.isBufferingTranscript {
+          self.toolCallTranscriptBuffer += text
+        }
       }
     }
 
@@ -95,10 +101,20 @@ class GeminiSessionViewModel: ObservableObject {
 
     // Wire tool call handling
     toolCallRouter = ToolCallRouter(bridge: openClawBridge, locationManager: locationManager)
+    toolCallRouter?.getTranscriptBuffer = { [weak self] in
+      guard let self else { return "" }
+      self.isBufferingTranscript = false
+      let buffer = self.toolCallTranscriptBuffer
+      self.toolCallTranscriptBuffer = ""
+      return buffer
+    }
 
     geminiService.onToolCall = { [weak self] toolCall in
       guard let self else { return }
       Task { @MainActor in
+        // Start buffering transcript so we capture what's said during research
+        self.isBufferingTranscript = true
+        self.toolCallTranscriptBuffer = ""
         for call in toolCall.functionCalls {
           self.toolCallRouter?.handleToolCall(call) { [weak self] response in
             self?.geminiService.sendToolResponse(response)
@@ -183,6 +199,8 @@ class GeminiSessionViewModel: ObservableObject {
     aiTranscript = ""
     toolCallStatus = .idle
     alertType = .none
+    isBufferingTranscript = false
+    toolCallTranscriptBuffer = ""
   }
 
   // MARK: - Alert Detection

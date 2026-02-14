@@ -6,6 +6,11 @@ class ToolCallRouter {
   private let locationManager: LocationManager
   private var inFlightTasks: [String: Task<Void, Never>] = [:]
 
+  /// Callback to fetch any transcript accumulated while tool calls were in-flight.
+  /// Called when a tool response is about to be sent, so the transcript context
+  /// can be injected alongside the result.
+  var getTranscriptBuffer: (() -> String)?
+
   init(bridge: OpenClawBridge, locationManager: LocationManager) {
     self.bridge = bridge
     self.locationManager = locationManager
@@ -53,7 +58,10 @@ class ToolCallRouter {
       NSLog("[ToolCall] Result for %@ (id: %@): %@",
             callName, callId, String(describing: result))
 
-      let response = self.buildToolResponse(callId: callId, name: callName, result: result)
+      // Inject any transcript accumulated while the tool was running
+      let contextualResult = self.injectTranscriptContext(result)
+
+      let response = self.buildToolResponse(callId: callId, name: callName, result: contextualResult)
       sendResponse(response)
 
       self.inFlightTasks.removeValue(forKey: callId)
@@ -93,6 +101,21 @@ class ToolCallRouter {
     return .success("Location: \(loc.description) (lat: \(loc.latitude), lon: \(loc.longitude))")
   }
 
+  /// Prepend conversation context to a tool result if any was captured during execution.
+  private func injectTranscriptContext(_ result: ToolResult) -> ToolResult {
+    let transcript = getTranscriptBuffer?() ?? ""
+    guard !transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+      return result
+    }
+    NSLog("[ToolCall] Injecting transcript context: %@", transcript)
+    switch result {
+    case .success(let text):
+      return .success("[While researching, this was said nearby: \"\(transcript)\"] \(text)")
+    case .failure(let err):
+      return .failure(err)
+    }
+  }
+
   private func buildToolResponse(
     callId: String,
     name: String,
@@ -104,7 +127,8 @@ class ToolCallRouter {
           [
             "id": callId,
             "name": name,
-            "response": result.responseValue
+            "response": result.responseValue,
+            "scheduling": "INTERRUPT"
           ]
         ]
       ]

@@ -138,7 +138,7 @@ enum ToolDeclarations {
       ],
       "required": ["task"]
     ] as [String: Any],
-    "behavior": "BLOCKING"
+    "behavior": "NON_BLOCKING"
   ]
 
   static let getLocation: [String: Any] = [
@@ -148,6 +148,7 @@ enum ToolDeclarations {
       "type": "object",
       "properties": [:] as [String: Any],
       "required": [] as [String]
-    ] as [String: Any]
+    ] as [String: Any],
+    "behavior": "NON_BLOCKING"
   ]
 }
